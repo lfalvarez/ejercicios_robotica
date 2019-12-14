@@ -13,6 +13,7 @@ import gym
 from gym_duckietown.envs import DuckietownEnv
 from apriltag import Detector
 from pyglet.window import key
+import transformations as tf
 from PIL import Image
 import cv2
 
@@ -33,8 +34,10 @@ X = 3.5
 y = 5.9
 angle = (np.pi/2)
 height = 0.18
+tile_size = 0.585
 
 def process_april_tag(pose):
+    ## Aquí jugar
     print(pose)
 
 
