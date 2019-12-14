@@ -97,21 +97,19 @@ def dist(matrix):
     return np.linalg.norm([matrix[0][3],matrix[1][3],matrix[2][3]])
 
 def process_april_tag(pose):
-    distances = [pose[0][3],pose[1][3], pose[2][3]]
-    if max(distances) < 0.5:
-        return np.array([0, 0])
-    threshold_forward = 0.7
+    angulo = pose[0][3]
+    distancia_frontal = pose[2][3]
+    threshold_de_distancia_frontal = 0.7
     threshold_angle = 0.1 ## Esto es en radianes.
-    maximos = []
-    if abs(distances[0]) > threshold_angle:
-        if distances[0] > 0:
-            maximos.append(RIGHT)
-        if distances[0] < 0:
-            maximos.append(LEFT)
-
-    if distances[2] > threshold_forward:
-        maximos.append(UP)
-    return maximos
+    movimientos = []
+    if abs(angulo) > threshold_angle:
+        if angulo > 0:
+            movimientos.append(RIGHT)
+        if angulo < 0:
+            movimientos.append(LEFT)
+    if distancia_frontal > threshold_de_distancia_frontal:
+        movimientos.append(UP)
+    return movimientos
 
 
 def update(dt):
