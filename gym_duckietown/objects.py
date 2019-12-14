@@ -42,6 +42,7 @@ class WorldObj:
         self.min_coords = obj['mesh'].min_coords
         self.max_coords = obj['mesh'].max_coords
         self.static = obj['static']
+        self.revert = obj['revert']
         self.safety_radius = safety_radius_mult *\
             calculate_safety_radius(self.mesh, self.scale)
 
@@ -68,7 +69,10 @@ class WorldObj:
         gl.glPushMatrix()
         gl.glTranslatef(*self.pos)
         gl.glScalef(self.scale, self.scale, self.scale)
-        gl.glRotatef(self.y_rot, 0, 1, 0)
+        rot = self.y_rot
+        if self.revert:
+            rot = rot + 180
+        gl.glRotatef(rot, 0, 1, 0)
         gl.glColor3f(*self.color)
         self.mesh.render()
         gl.glPopMatrix()
@@ -102,6 +106,9 @@ class WorldObj:
         if not self.static:
             raise NotImplementedError
 
+    def is_duckiebot(self):
+        return False
+
 
 class DuckiebotObj(WorldObj):
     def __init__(self, obj, domain_rand, safety_radius_mult, wheel_dist, 
@@ -129,6 +136,9 @@ class DuckiebotObj(WorldObj):
 
         self.robot_width = robot_width
         self.robot_length = robot_length
+
+    def is_duckiebot(self):
+        return True
 
     # FIXME: this does not follow the same signature as WorldOb
     def step(self, delta_time, closest_curve_point, objects):
@@ -245,7 +255,7 @@ class DuckiebotObj(WorldObj):
 
         # Update the robot's direction angle
         self.angle += rotAngle
-        self.y_rot += rotAngle * 180 / np.pi 
+        self.y_rot += rotAngle * 180 / np.pi
 
         # Recompute the bounding boxes (BB) for the duckiebot
         self.obj_corners = agent_boundbox(
@@ -399,3 +409,6 @@ class TrafficLightObj(WorldObj):
             elif self.y_rot == 225 or self.y_rot == 315:
                 return self.pattern == 0
         return False
+
+class FakeDuckiebotObj(DuckiebotObj):
+    pass

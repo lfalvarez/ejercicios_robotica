@@ -22,7 +22,7 @@ from gym.utils import seeding
 
 from .collision import *
 # Objects utility code
-from .objects import WorldObj, DuckieObj, TrafficLightObj, DuckiebotObj
+from .objects import WorldObj, DuckieObj, TrafficLightObj, DuckiebotObj, FakeDuckiebotObj
 # Graphics utility code
 from .objmesh import *
 # Randomization code
@@ -652,6 +652,7 @@ class Simulator(gym.Env):
             assert not ('height' in desc and 'scale' in desc), "cannot specify both height and scale"
 
             static = desc.get('static', True)
+            revert = desc.get('revert', False)
 
             obj_desc = {
                 'kind': kind,
@@ -661,6 +662,7 @@ class Simulator(gym.Env):
                 'y_rot': rotate,
                 'optional': optional,
                 'static': static,
+                'revert': revert,
             }
 
             # obj = None
@@ -676,8 +678,8 @@ class Simulator(gym.Env):
                 elif kind == "duckie":
                     obj = DuckieObj(obj_desc, self.domain_rand, SAFETY_RAD_MULT, self.road_tile_size)
                 else:
-                    msg = 'I do not know what object this is: %s' % kind
-                    raise Exception(msg)
+                    obj = FakeDuckiebotObj(obj_desc, self.domain_rand, SAFETY_RAD_MULT, WHEEL_DIST,
+                                       ROBOT_WIDTH, ROBOT_LENGTH)
 
             self.objects.append(obj)
 
@@ -1231,7 +1233,7 @@ class Simulator(gym.Env):
 
         # Update world objects
         for obj in self.objects:
-            if not obj.static and obj.kind == "duckiebot":
+            if not obj.static and obj.is_duckiebot:
                 obj_i, obj_j = self.get_grid_coords(obj.pos)
                 same_tile_obj = [
                     o for o in self.objects if
