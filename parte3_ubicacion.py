@@ -33,12 +33,20 @@ args = parser.parse_args()
 X = 3.5
 y = 5.9
 angle = (np.pi/2)
-height = 0.18
+tag_size = 0.18
 tile_size = 0.585
 
 def process_april_tag(pose):
     ## Aquí jugar
-    print(pose)
+    ## pose es tag con respecto al robot
+    ## T_a es la transformación del april tag con respecto al mapa
+    T_a = tf.translation_matrix([-X * tile_size, -tag_size * 3/4, y*tile_size])
+    R_a = tf.euler_matrix(0, angle, 0)
+    ## Aquí dando vuelta el robot, por cuenta del cambio de los angulos
+    T_r_a = np.dot(pose, tf.euler_matrix(0, np.pi, 0))
+    T_a_r = np.linalg.inv(T_r_a)
+    T_m_r = np.dot(T_a, T_a_r)
+    print(T_m_r)
 
 
 if args.env_name is None:
