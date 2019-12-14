@@ -96,11 +96,10 @@ env.unwrapped.window.push_handlers(key_handler)
 def dist(matrix):
     return np.linalg.norm([matrix[0][3],matrix[1][3],matrix[2][3]])
 
-def process_april_tag(cv_img, camera, size, pose):
-    elements = []
+def process_april_tag(pose):
     distances = [pose[0][3],pose[1][3], pose[2][3]]
-    maximo = max(distances)
-    if maximo < 0.5:
+    print(distances)
+    if max(distances) < 0.5:
         return np.array([0, 0])
     threshold_forward = 0.7
     threshold_angle = 0.1
@@ -140,7 +139,6 @@ def update(dt):
         action *= 1.5
 
     obs, reward, done, info = env.step(action)
-    ##print('step_count = %s, reward=%.3f' % (env.unwrapped.step_count, reward))
 
     if key_handler[key.RETURN]:
         im = Image.fromarray(obs)
@@ -159,10 +157,9 @@ def update(dt):
     for detection in detections:
         pose, e0, e1 = detector.detection_pose(detection, camera, tag_size * tile_size)
         if not np.isnan(pose[0][0]):
-            next_moves = process_april_tag(cv_img, camera, tag_size * tile_size, pose)
+            next_moves = process_april_tag(pose)
             for action in next_moves:
                 env.step(action)
-            ##_draw_pose(cv_img, camera, tag_size * tile_size, pose)
 
     ##########################
     if done:
