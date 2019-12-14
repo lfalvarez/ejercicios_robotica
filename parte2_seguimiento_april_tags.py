@@ -98,11 +98,10 @@ def dist(matrix):
 
 def process_april_tag(pose):
     distances = [pose[0][3],pose[1][3], pose[2][3]]
-    print(distances)
     if max(distances) < 0.5:
         return np.array([0, 0])
     threshold_forward = 0.7
-    threshold_angle = 0.1
+    threshold_angle = 0.1 ## Esto es en radianes.
     maximos = []
     if abs(distances[0]) > threshold_angle:
         if distances[0] > 0:
