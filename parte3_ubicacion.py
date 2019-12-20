@@ -44,9 +44,11 @@ def process_april_tag(pose):
     R_a = tf.euler_matrix(0, angle, 0)
     ## Aquí dando vuelta el robot, por cuenta del cambio de los angulos
     T_r_a = np.dot(pose, tf.euler_matrix(0, np.pi, 0))
+    ##print(T_r_a)
     T_a_r = np.linalg.inv(T_r_a)
     T_m_r = np.dot(T_a, T_a_r)
-    print(T_m_r)
+    a = np.dot(pose, T_m_r)
+    print(a)
 
 
 if args.env_name is None:
@@ -92,14 +94,15 @@ while True:
     gray = cv2.cvtColor(np.array(original), cv2.COLOR_RGB2GRAY)
     detector = Detector()
     detections, _ = detector.detect(gray, return_image=True)
-
+    done = False
     for detection in detections:
         pose, e0, e1 = detector.detection_pose(detection, camera, tag_size * tile_size)
         process_april_tag(pose)
+        done = True
 
-
-    obs, reward, done, info = env.step([speed, steering])
-    total_reward += reward
+    if not done:
+        obs, reward, done, info = env.step([speed, steering])
+        total_reward += reward
 
     env.render()
 
