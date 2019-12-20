@@ -42,13 +42,13 @@ def process_april_tag(pose):
     ## T_a es la transformación del april tag con respecto al mapa
     T_a = tf.translation_matrix([-X * tile_size, -tag_size * 3/4, y*tile_size])
     R_a = tf.euler_matrix(0, angle, 0)
+    T_m_a = tf.concatenate_matrices(T_a, R_a)
     ## Aquí dando vuelta el robot, por cuenta del cambio de los angulos
     T_r_a = np.dot(pose, tf.euler_matrix(0, np.pi, 0))
     ##print(T_r_a)
     T_a_r = np.linalg.inv(T_r_a)
-    T_m_r = np.dot(T_a, T_a_r)
-    a = np.dot(pose, T_m_r)
-    print(a)
+    T_m_r = np.dot(T_m_a, T_a_r)
+    print(pose @ T_m_r)
 
 
 if args.env_name is None:

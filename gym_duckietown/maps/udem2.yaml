@@ -14,7 +14,7 @@ tiles:
 - [floor    , curve_left/S  , straight/E, 3way_left/E   , straight/E, curve_left/E  , asphalt       , asphalt]
 - [floor    , floor         , floor     , floor         , floor     , floor         , floor         , floor]
 
-start_tile: [3,3]
+start_tile: [3,2]
 # The following is a listing of 3D objects placed on the map
 #
 # pos: object positions are scaled according to the tile size, so
